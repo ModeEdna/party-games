@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -13,10 +14,10 @@ import { getDifficultyLevels } from "../data/charades-words";
 
 function GameSetup({ onStartGame }) {
   const difficulties = getDifficultyLevels();
-  const [selectedDifficulty, setSelectedDifficulty] = React.useState("easy");
-  const [team1Name, setTeam1Name] = React.useState("Team 1");
-  const [team2Name, setTeam2Name] = React.useState("Team 2");
-  const [timerSeconds, setTimerSeconds] = React.useState(60);
+  const [selectedDifficulty, setSelectedDifficulty] = useState("easy");
+  const [team1Name, setTeam1Name] = useState("Team 1");
+  const [team2Name, setTeam2Name] = useState("Team 2");
+  const [timerSeconds, setTimerSeconds] = useState(60);
 
   const handleStartGame = () => {
     onStartGame({
