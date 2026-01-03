@@ -21,6 +21,7 @@ function GameBoard({ gameConfig, onBackToSetup }) {
   const [timerActive, setTimerActive] = useState(true);
   const [timeLeft, setTimeLeft] = useState(gameConfig.timerSeconds);
   const [roundStarted, setRoundStarted] = useState(false);
+  const [timerPaused, setTimerPaused] = useState(false);
 
   useEffect(() => {
     loadNewWord();
@@ -73,6 +74,12 @@ function GameBoard({ gameConfig, onBackToSetup }) {
     setTimerActive(false);
   };
 
+  const handlePauseToggle = () => {
+    setTimerPaused(!timerPaused);
+  };
+
+  const isGameOver = roundCount > gameConfig.totalRounds;
+
   return (
     <Container maxWidth="lg">
       <Box sx={{ py: 3, minHeight: "100vh" }}>
@@ -91,7 +98,7 @@ function GameBoard({ gameConfig, onBackToSetup }) {
         </Box>
 
         {/* Main Game Card */}
-        {gameActive && currentWord ? (
+        {gameActive && currentWord && !isGameOver ? (
           <Card
             sx={{
               background: "linear-gradient(135deg, #ffffff 0%, #f5f7fa 100%)",
@@ -113,43 +120,87 @@ function GameBoard({ gameConfig, onBackToSetup }) {
                   mb: 6,
                   pb: 3,
                   borderBottom: "1px solid rgba(0,0,0,0.06)",
-                  opacity: 0.7,
                 }}
               >
                 <Box sx={{ display: "flex", gap: 4 }}>
-                  <Box sx={{ textAlign: "center" }}>
+                  <Box
+                    sx={{
+                      textAlign: "center",
+                      opacity: currentTeamTurn === 1 ? 1 : 0.5,
+                      borderBottom:
+                        currentTeamTurn === 1 ? "3px solid #667eea" : "none",
+                      pb: currentTeamTurn === 1 ? 1 : 0,
+                      transition: "all 0.3s ease",
+                    }}
+                  >
                     <Typography
                       variant="caption"
-                      sx={{ color: "#666", display: "block", mb: 0.5 }}
+                      sx={{
+                        color: "#666",
+                        display: "block",
+                        mb: 0.5,
+                        fontWeight: currentTeamTurn === 1 ? "bold" : "normal",
+                      }}
                     >
                       {gameConfig.team1.name}
                     </Typography>
-                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontWeight: "bold",
+                        color: currentTeamTurn === 1 ? "#667eea" : "#666",
+                      }}
+                    >
                       {team1Score}
                     </Typography>
                   </Box>
-                  <Box sx={{ textAlign: "center" }}>
+                  <Box
+                    sx={{
+                      textAlign: "center",
+                      opacity: currentTeamTurn === 2 ? 1 : 0.5,
+                      borderBottom:
+                        currentTeamTurn === 2 ? "3px solid #764ba2" : "none",
+                      pb: currentTeamTurn === 2 ? 1 : 0,
+                      transition: "all 0.3s ease",
+                    }}
+                  >
                     <Typography
                       variant="caption"
-                      sx={{ color: "#666", display: "block", mb: 0.5 }}
+                      sx={{
+                        color: "#666",
+                        display: "block",
+                        mb: 0.5,
+                        fontWeight: currentTeamTurn === 2 ? "bold" : "normal",
+                      }}
                     >
                       {gameConfig.team2.name}
                     </Typography>
-                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontWeight: "bold",
+                        color: currentTeamTurn === 2 ? "#764ba2" : "#666",
+                      }}
+                    >
                       {team2Score}
                     </Typography>
                   </Box>
                 </Box>
-                <Typography variant="caption" sx={{ color: "#999" }}>
-                  Round {roundCount}
-                </Typography>
+                <Box sx={{ textAlign: "right" }}>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "#999", display: "block" }}
+                  >
+                    Round {roundCount} of {gameConfig.totalRounds}
+                  </Typography>
+                </Box>
               </Box>
 
               {/* Timer Display */}
               <Box sx={{ mb: 6 }}>
                 <Timer
                   duration={gameConfig.timerSeconds}
-                  isActive={timerActive}
+                  isActive={timerActive && !timerPaused}
                   onTimerEnd={handleTimerEnd}
                   timeLeft={timeLeft}
                   setTimeLeft={setTimeLeft}
@@ -181,14 +232,7 @@ function GameBoard({ gameConfig, onBackToSetup }) {
                 </Typography>
               </Box>
 
-              {/* Current Team Indicator */}
-              <Box sx={{ textAlign: "center", mb: 6 }}>
-                <Typography variant="body1" sx={{ color: "#666" }}>
-                  {currentTeamTurn === 1
-                    ? `${gameConfig.team1.name}'s Turn`
-                    : `${gameConfig.team2.name}'s Turn`}
-                </Typography>
-              </Box>
+              {/* Current Team Indicator - REMOVED */}
 
               {/* Action Buttons */}
               <Box

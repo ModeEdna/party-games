@@ -18,6 +18,7 @@ function GameSetup({ onStartGame }) {
   const [team1Name, setTeam1Name] = useState("Team 1");
   const [team2Name, setTeam2Name] = useState("Team 2");
   const [timerSeconds, setTimerSeconds] = useState(60);
+  const [roundCount, setRoundCount] = useState(5);
 
   const handleStartGame = () => {
     onStartGame({
@@ -25,6 +26,7 @@ function GameSetup({ onStartGame }) {
       team1: { name: team1Name, score: 0 },
       team2: { name: team2Name, score: 0 },
       timerSeconds: parseInt(timerSeconds) || 60,
+      totalRounds: parseInt(roundCount) || 5,
     });
   };
 
@@ -115,6 +117,18 @@ function GameSetup({ onStartGame }) {
               value={timerSeconds}
               onChange={(e) => setTimerSeconds(e.target.value)}
               inputProps={{ min: 10, max: 300, step: 10 }}
+              sx={{ mb: 3 }}
+            />
+
+            <Typography variant="h6" sx={{ mb: 2 }}>
+              Number of Rounds
+            </Typography>
+            <TextField
+              fullWidth
+              type="number"
+              value={roundCount}
+              onChange={(e) => setRoundCount(e.target.value)}
+              inputProps={{ min: 1, max: 50, step: 1 }}
               sx={{ mb: 3 }}
             />
 
