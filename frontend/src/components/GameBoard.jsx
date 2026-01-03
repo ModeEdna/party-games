@@ -83,20 +83,6 @@ function GameBoard({ gameConfig, onBackToSetup }) {
   return (
     <Container maxWidth="lg">
       <Box sx={{ py: 3, minHeight: "100vh" }}>
-        {/* Header */}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "flex-end",
-            alignItems: "center",
-            mb: 4,
-          }}
-        >
-          <Button variant="outlined" color="error" onClick={onBackToSetup}>
-            End Game
-          </Button>
-        </Box>
-
         {/* Main Game Card */}
         {gameActive && currentWord && !isGameOver ? (
           <Card
@@ -116,13 +102,14 @@ function GameBoard({ gameConfig, onBackToSetup }) {
                 sx={{
                   display: "flex",
                   justifyContent: "space-between",
-                  alignItems: "center",
+                  alignItems: "flex-start",
                   mb: 6,
                   pb: 3,
                   borderBottom: "1px solid rgba(0,0,0,0.06)",
+                  gap: 2,
                 }}
               >
-                <Box sx={{ display: "flex", gap: 4 }}>
+                <Box sx={{ display: "flex", gap: 4, flex: 1 }}>
                   <Box
                     sx={{
                       textAlign: "center",
@@ -189,10 +176,54 @@ function GameBoard({ gameConfig, onBackToSetup }) {
                 <Box sx={{ textAlign: "right" }}>
                   <Typography
                     variant="caption"
-                    sx={{ color: "#999", display: "block" }}
+                    sx={{ color: "#999", display: "block", mb: 1 }}
                   >
                     Round {roundCount} of {gameConfig.totalRounds}
                   </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: 0.5,
+                      justifyContent: "flex-end",
+                    }}
+                  >
+                    {timerActive && (
+                      <Button
+                        size="small"
+                        variant="text"
+                        onClick={handlePauseToggle}
+                        sx={{
+                          color: timerPaused ? "#2196F3" : "#999",
+                          fontSize: "0.9rem",
+                          padding: "4px 8px",
+                          minWidth: "auto",
+                          "&:hover": {
+                            color: "#2196F3",
+                            backgroundColor: "rgba(33, 150, 243, 0.08)",
+                          },
+                        }}
+                      >
+                        {timerPaused ? "▶️" : "⏸️"}
+                      </Button>
+                    )}
+                    <Button
+                      size="small"
+                      variant="text"
+                      onClick={onBackToSetup}
+                      sx={{
+                        color: "#999",
+                        fontSize: "0.9rem",
+                        padding: "4px 8px",
+                        minWidth: "auto",
+                        "&:hover": {
+                          color: "#f44336",
+                          backgroundColor: "rgba(244, 67, 54, 0.08)",
+                        },
+                      }}
+                    >
+                      ✕
+                    </Button>
+                  </Box>
                 </Box>
               </Box>
 
@@ -302,26 +333,7 @@ function GameBoard({ gameConfig, onBackToSetup }) {
                 </Button>
               </Box>
 
-              {/* Pause Button */}
-              {timerActive && (
-                <Box sx={{ textAlign: "center", mb: 4 }}>
-                  <Button
-                    variant="outlined"
-                    onClick={handlePauseToggle}
-                    sx={{
-                      color: timerPaused ? "#2196F3" : "#666",
-                      borderColor: timerPaused ? "#2196F3" : "#ddd",
-                      borderWidth: 2,
-                      "&:hover": {
-                        borderColor: "#2196F3",
-                        color: "#2196F3",
-                      },
-                    }}
-                  >
-                    {timerPaused ? "▶️ Resume" : "⏸️ Pause"}
-                  </Button>
-                </Box>
-              )}
+              {/* Pause Button - REMOVED (moved to header) */}
 
               {/* Next Round Button */}
               {!timerActive && (
