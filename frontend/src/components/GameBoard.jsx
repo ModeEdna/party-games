@@ -241,29 +241,32 @@ function GameBoard({ gameConfig, onBackToSetup }) {
                   gap: 2,
                   justifyContent: "center",
                   flexWrap: { xs: "wrap", sm: "nowrap" },
+                  mb: 3,
                 }}
               >
                 <Button
                   variant="contained"
                   size="large"
                   onClick={handleCorrect}
-                  disabled={!timerActive}
+                  disabled={!timerActive || timerPaused}
                   sx={{
                     flex: 1,
                     py: 2,
                     fontSize: "1rem",
                     fontWeight: "bold",
-                    background: timerActive
-                      ? "linear-gradient(135deg, #4CAF50 0%, #45a049 100%)"
-                      : "#ccc",
+                    background:
+                      timerActive && !timerPaused
+                        ? "linear-gradient(135deg, #4CAF50 0%, #45a049 100%)"
+                        : "#ccc",
                     color: "white",
                     borderRadius: "12px",
-                    "&:hover": timerActive
-                      ? {
-                          background:
-                            "linear-gradient(135deg, #45a049 0%, #4CAF50 100%)",
-                        }
-                      : {},
+                    "&:hover":
+                      timerActive && !timerPaused
+                        ? {
+                            background:
+                              "linear-gradient(135deg, #45a049 0%, #4CAF50 100%)",
+                          }
+                        : {},
                     minWidth: "150px",
                   }}
                 >
@@ -273,29 +276,52 @@ function GameBoard({ gameConfig, onBackToSetup }) {
                   variant="contained"
                   size="large"
                   onClick={handleSkip}
-                  disabled={!timerActive}
+                  disabled={!timerActive || timerPaused}
                   sx={{
                     flex: 1,
                     py: 2,
                     fontSize: "1rem",
                     fontWeight: "bold",
-                    background: timerActive
-                      ? "linear-gradient(135deg, #FF9800 0%, #F57C00 100%)"
-                      : "#ccc",
+                    background:
+                      timerActive && !timerPaused
+                        ? "linear-gradient(135deg, #FF9800 0%, #F57C00 100%)"
+                        : "#ccc",
                     color: "white",
                     borderRadius: "12px",
-                    "&:hover": timerActive
-                      ? {
-                          background:
-                            "linear-gradient(135deg, #F57C00 0%, #FF9800 100%)",
-                        }
-                      : {},
+                    "&:hover":
+                      timerActive && !timerPaused
+                        ? {
+                            background:
+                              "linear-gradient(135deg, #F57C00 0%, #FF9800 100%)",
+                          }
+                        : {},
                     minWidth: "150px",
                   }}
                 >
                   ⏭️ Skip
                 </Button>
               </Box>
+
+              {/* Pause Button */}
+              {timerActive && (
+                <Box sx={{ textAlign: "center", mb: 4 }}>
+                  <Button
+                    variant="outlined"
+                    onClick={handlePauseToggle}
+                    sx={{
+                      color: timerPaused ? "#2196F3" : "#666",
+                      borderColor: timerPaused ? "#2196F3" : "#ddd",
+                      borderWidth: 2,
+                      "&:hover": {
+                        borderColor: "#2196F3",
+                        color: "#2196F3",
+                      },
+                    }}
+                  >
+                    {timerPaused ? "▶️ Resume" : "⏸️ Pause"}
+                  </Button>
+                </Box>
+              )}
 
               {/* Next Round Button */}
               {!timerActive && (
