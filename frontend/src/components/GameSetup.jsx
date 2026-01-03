@@ -1,0 +1,152 @@
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Container,
+  Grid,
+  TextField,
+  Typography,
+  ButtonGroup,
+} from "@mui/material";
+import { getDifficultyLevels } from "../data/charades-words";
+
+function GameSetup({ onStartGame }) {
+  const difficulties = getDifficultyLevels();
+  const [selectedDifficulty, setSelectedDifficulty] = React.useState("easy");
+  const [team1Name, setTeam1Name] = React.useState("Team 1");
+  const [team2Name, setTeam2Name] = React.useState("Team 2");
+  const [timerSeconds, setTimerSeconds] = React.useState(60);
+
+  const handleStartGame = () => {
+    onStartGame({
+      difficulty: selectedDifficulty,
+      team1: { name: team1Name, score: 0 },
+      team2: { name: team2Name, score: 0 },
+      timerSeconds: parseInt(timerSeconds) || 60,
+    });
+  };
+
+  return (
+    <Container maxWidth="sm">
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          py: 4,
+        }}
+      >
+        <Typography
+          variant="h3"
+          component="h1"
+          sx={{ mb: 4, fontWeight: "bold" }}
+        >
+          🎉 Party Games
+        </Typography>
+
+        <Card sx={{ width: "100%", mb: 3 }}>
+          <CardContent>
+            <Typography variant="h6" sx={{ mb: 2 }}>
+              Select Difficulty
+            </Typography>
+            <ButtonGroup
+              fullWidth
+              sx={{
+                mb: 3,
+                flexWrap: "wrap",
+                gap: 1,
+                "& .MuiButton-root": { flex: 1 },
+              }}
+            >
+              {difficulties.map((level) => (
+                <Button
+                  key={level.key}
+                  variant={
+                    selectedDifficulty === level.key ? "contained" : "outlined"
+                  }
+                  onClick={() => setSelectedDifficulty(level.key)}
+                  sx={{
+                    backgroundColor:
+                      selectedDifficulty === level.key
+                        ? level.color
+                        : "transparent",
+                    borderColor: level.color,
+                    color:
+                      selectedDifficulty === level.key ? "white" : level.color,
+                    "&:hover": {
+                      backgroundColor: level.color,
+                      color: "white",
+                    },
+                    minWidth: "70px",
+                  }}
+                >
+                  {level.label}
+                </Button>
+              ))}
+            </ButtonGroup>
+
+            <Typography variant="h6" sx={{ mb: 2 }}>
+              Team Names
+            </Typography>
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="Team 1"
+                  value={team1Name}
+                  onChange={(e) => setTeam1Name(e.target.value)}
+                  variant="outlined"
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="Team 2"
+                  value={team2Name}
+                  onChange={(e) => setTeam2Name(e.target.value)}
+                  variant="outlined"
+                />
+              </Grid>
+            </Grid>
+
+            <Typography variant="h6" sx={{ mb: 2 }}>
+              Timer Duration (seconds)
+            </Typography>
+            <TextField
+              fullWidth
+              type="number"
+              value={timerSeconds}
+              onChange={(e) => setTimerSeconds(e.target.value)}
+              inputProps={{ min: 10, max: 300, step: 10 }}
+              sx={{ mb: 3 }}
+            />
+
+            <Button
+              fullWidth
+              variant="contained"
+              size="large"
+              onClick={handleStartGame}
+              sx={{
+                py: 2,
+                fontSize: "1.1rem",
+                fontWeight: "bold",
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                "&:hover": {
+                  background:
+                    "linear-gradient(135deg, #764ba2 0%, #667eea 100%)",
+                },
+              }}
+            >
+              Start Game
+            </Button>
+          </CardContent>
+        </Card>
+      </Box>
+    </Container>
+  );
+}
+
+export default GameSetup;
