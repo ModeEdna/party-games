@@ -1,17 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Box, Typography, LinearProgress } from "@mui/material";
 
-function Timer({ duration }) {
-  const [timeLeft, setTimeLeft] = useState(duration);
-  const [isActive, setIsActive] = useState(true);
-
+function Timer({ duration, isActive, onTimerEnd, timeLeft, setTimeLeft }) {
   useEffect(() => {
     let interval;
     if (isActive && timeLeft > 0) {
       interval = setInterval(() => {
         setTimeLeft((time) => {
           if (time <= 1) {
-            setIsActive(false);
+            onTimerEnd();
             return 0;
           }
           return time - 1;
@@ -20,7 +17,7 @@ function Timer({ duration }) {
     }
 
     return () => clearInterval(interval);
-  }, [isActive, timeLeft]);
+  }, [isActive]);
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -34,22 +31,16 @@ function Timer({ duration }) {
   return (
     <Box
       sx={{
-        p: 3,
-        backgroundColor: isWarning ? "#fff3cd" : "#e3f2fd",
-        borderRadius: "10px",
-        border: `2px solid ${isWarning ? "#ff6b6b" : "#2196F3"}`,
         textAlign: "center",
       }}
     >
-      <Typography variant="h5" sx={{ mb: 1, fontWeight: "bold" }}>
-        ⏱️ Time Remaining
-      </Typography>
       <Typography
-        variant="h2"
+        variant="h3"
         sx={{
           fontWeight: "bold",
-          color: isWarning ? "#ff6b6b" : "#2196F3",
-          mb: 2,
+          color: isWarning ? "#ff6b6b" : "#667eea",
+          mb: 1,
+          fontSize: { xs: "2rem", md: "3rem" },
         }}
       >
         {formatTime(timeLeft)}
@@ -58,11 +49,12 @@ function Timer({ duration }) {
         variant="determinate"
         value={progress}
         sx={{
-          height: 8,
-          borderRadius: "5px",
-          backgroundColor: "#ddd",
+          height: 6,
+          borderRadius: "3px",
+          backgroundColor: "#e0e0e0",
           "& .MuiLinearProgress-bar": {
-            backgroundColor: isWarning ? "#ff6b6b" : "#4CAF50",
+            backgroundColor: isWarning ? "#ff6b6b" : "#667eea",
+            borderRadius: "3px",
           },
         }}
       />

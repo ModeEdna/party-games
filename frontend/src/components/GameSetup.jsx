@@ -40,26 +40,17 @@ function GameSetup({ onStartGame }) {
           py: 4,
         }}
       >
-        <Typography
-          variant="h3"
-          component="h1"
-          sx={{ mb: 4, fontWeight: "bold" }}
-        >
-          🎉 Party Games
-        </Typography>
-
-        <Card sx={{ width: "100%", mb: 3 }}>
+        <Card sx={{ width: "100%", mb: 3, borderRadius: "16px" }}>
           <CardContent>
             <Typography variant="h6" sx={{ mb: 2 }}>
               Select Difficulty
             </Typography>
-            <ButtonGroup
-              fullWidth
+            <Box
               sx={{
                 mb: 3,
-                flexWrap: "wrap",
-                gap: 1,
-                "& .MuiButton-root": { flex: 1 },
+                display: "flex",
+                gap: 2,
+                justifyContent: "space-between",
               }}
             >
               {difficulties.map((level) => (
@@ -69,25 +60,27 @@ function GameSetup({ onStartGame }) {
                     selectedDifficulty === level.key ? "contained" : "outlined"
                   }
                   onClick={() => setSelectedDifficulty(level.key)}
+                  fullWidth
                   sx={{
                     backgroundColor:
                       selectedDifficulty === level.key
                         ? level.color
                         : "transparent",
                     borderColor: level.color,
+                    border: `2px solid ${level.color}`,
                     color:
                       selectedDifficulty === level.key ? "white" : level.color,
+                    textAlign: "center",
                     "&:hover": {
                       backgroundColor: level.color,
                       color: "white",
                     },
-                    minWidth: "70px",
                   }}
                 >
                   {level.label}
                 </Button>
               ))}
-            </ButtonGroup>
+            </Box>
 
             <Typography variant="h6" sx={{ mb: 2 }}>
               Team Names

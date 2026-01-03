@@ -5,14 +5,10 @@ import {
   Card,
   CardContent,
   Container,
-  Grid,
   Typography,
-  Paper,
 } from "@mui/material";
 import { getRandomWord } from "../data/charades-words";
 import Timer from "./Timer";
-import WordCard from "./WordCard";
-import ScoreBoard from "./ScoreBoard";
 
 function GameBoard({ gameConfig, onBackToSetup }) {
   const [currentWord, setCurrentWord] = useState(null);
@@ -22,9 +18,13 @@ function GameBoard({ gameConfig, onBackToSetup }) {
   const [usedWords, setUsedWords] = useState(new Set());
   const [gameActive, setGameActive] = useState(true);
   const [roundCount, setRoundCount] = useState(1);
+  const [timerActive, setTimerActive] = useState(true);
+  const [timeLeft, setTimeLeft] = useState(gameConfig.timerSeconds);
+  const [roundStarted, setRoundStarted] = useState(false);
 
   useEffect(() => {
     loadNewWord();
+    setRoundStarted(true);
   }, []);
 
   const loadNewWord = () => {
@@ -44,92 +44,279 @@ function GameBoard({ gameConfig, onBackToSetup }) {
   };
 
   const handleCorrect = () => {
-    if (currentTeamTurn === 1) {
-      setTeam1Score(team1Score + 1);
-    } else {
-      setTeam2Score(team2Score + 1);
+    if (timerActive) {
+      if (currentTeamTurn === 1) {
+        setTeam1Score(team1Score + 1);
+      } else {
+        setTeam2Score(team2Score + 1);
+      }
+      loadNewWord();
     }
-    loadNewWord();
   };
 
   const handleSkip = () => {
-    setCurrentTeamTurn(currentTeamTurn === 1 ? 2 : 1);
-    loadNewWord();
+    if (timerActive) {
+      loadNewWord();
+    }
+  };
+
+  const handleNextRound = () => {
     setRoundCount(roundCount + 1);
+    setCurrentTeamTurn(currentTeamTurn === 1 ? 2 : 1);
+    setTimerActive(true);
+    setTimeLeft(gameConfig.timerSeconds);
+    setRoundStarted(true);
+    loadNewWord();
+  };
+
+  const handleTimerEnd = () => {
+    setTimerActive(false);
   };
 
   return (
-    <Container maxWidth="md">
-      <Box sx={{ py: 3 }}>
+    <Container maxWidth="lg">
+      <Box sx={{ py: 3, minHeight: "100vh" }}>
+        {/* Header */}
         <Box
           sx={{
             display: "flex",
-            justifyContent: "space-between",
+            justifyContent: "flex-end",
             alignItems: "center",
-            mb: 3,
+            mb: 4,
           }}
         >
-          <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-            🎭 Charades Game
-          </Typography>
           <Button variant="outlined" color="error" onClick={onBackToSetup}>
             End Game
           </Button>
         </Box>
 
-        {/* Score Board */}
-        <ScoreBoard
-          team1={{ name: gameConfig.team1.name, score: team1Score }}
-          team2={{ name: gameConfig.team2.name, score: team2Score }}
-          currentTeam={currentTeamTurn}
-          roundCount={roundCount}
-        />
-
-        {/* Timer */}
-        <Box sx={{ mb: 3 }}>
-          <Timer duration={gameConfig.timerSeconds} />
-        </Box>
-
-        {/* Main Game Area */}
+        {/* Main Game Card */}
         {gameActive && currentWord ? (
-          <Grid container spacing={3} justifyContent="center">
-            <Grid item xs={12} md={8}>
-              <WordCard word={currentWord} />
+          <Card
+            sx={{
+              background: "linear-gradient(135deg, #ffffff 0%, #f5f7fa 100%)",
+              borderRadius: "24px",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.12)",
+              overflow: "visible",
+              position: "relative",
+              maxWidth: "600px",
+              mx: "auto",
+            }}
+          >
+            <CardContent sx={{ p: { xs: 2, md: 4 } }}>
+              {/* Minimalist Score Info at Top */}
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 6,
+                  pb: 3,
+                  borderBottom: "1px solid rgba(0,0,0,0.06)",
+                  opacity: 0.7,
+                }}
+              >
+                <Box sx={{ display: "flex", gap: 4 }}>
+                  <Box sx={{ textAlign: "center" }}>
+                    <Typography
+                      variant="caption"
+                      sx={{ color: "#666", display: "block", mb: 0.5 }}
+                    >
+                      {gameConfig.team1.name}
+                    </Typography>
+                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                      {team1Score}
+                    </Typography>
+                  </Box>
+                  <Box sx={{ textAlign: "center" }}>
+                    <Typography
+                      variant="caption"
+                      sx={{ color: "#666", display: "block", mb: 0.5 }}
+                    >
+                      {gameConfig.team2.name}
+                    </Typography>
+                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                      {team2Score}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Typography variant="caption" sx={{ color: "#999" }}>
+                  Round {roundCount}
+                </Typography>
+              </Box>
 
-              <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
+              {/* Timer Display */}
+              <Box sx={{ mb: 6 }}>
+                <Timer
+                  duration={gameConfig.timerSeconds}
+                  isActive={timerActive}
+                  onTimerEnd={handleTimerEnd}
+                  timeLeft={timeLeft}
+                  setTimeLeft={setTimeLeft}
+                />
+              </Box>
+
+              {/* Main Word Display - Center Stage */}
+              <Box
+                sx={{
+                  textAlign: "center",
+                  my: 6,
+                  minHeight: "150px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Typography
+                  variant="h2"
+                  sx={{
+                    fontWeight: "900",
+                    fontSize: { xs: "2.5rem", md: "4rem" },
+                    color: "#667eea",
+                    letterSpacing: "-2px",
+                    lineHeight: 1,
+                  }}
+                >
+                  {currentWord}
+                </Typography>
+              </Box>
+
+              {/* Current Team Indicator */}
+              <Box sx={{ textAlign: "center", mb: 6 }}>
+                <Typography variant="body1" sx={{ color: "#666" }}>
+                  {currentTeamTurn === 1
+                    ? `${gameConfig.team1.name}'s Turn`
+                    : `${gameConfig.team2.name}'s Turn`}
+                </Typography>
+              </Box>
+
+              {/* Action Buttons */}
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 2,
+                  justifyContent: "center",
+                  flexWrap: { xs: "wrap", sm: "nowrap" },
+                }}
+              >
                 <Button
-                  fullWidth
                   variant="contained"
-                  color="success"
                   size="large"
                   onClick={handleCorrect}
-                  sx={{ py: 2, fontSize: "1rem", fontWeight: "bold" }}
+                  disabled={!timerActive}
+                  sx={{
+                    flex: 1,
+                    py: 2,
+                    fontSize: "1rem",
+                    fontWeight: "bold",
+                    background: timerActive
+                      ? "linear-gradient(135deg, #4CAF50 0%, #45a049 100%)"
+                      : "#ccc",
+                    color: "white",
+                    borderRadius: "12px",
+                    "&:hover": timerActive
+                      ? {
+                          background:
+                            "linear-gradient(135deg, #45a049 0%, #4CAF50 100%)",
+                        }
+                      : {},
+                    minWidth: "150px",
+                  }}
                 >
-                  ✓ Guessed Correctly
+                  ✓ Correct
                 </Button>
                 <Button
-                  fullWidth
                   variant="contained"
-                  color="warning"
                   size="large"
                   onClick={handleSkip}
-                  sx={{ py: 2, fontSize: "1rem", fontWeight: "bold" }}
+                  disabled={!timerActive}
+                  sx={{
+                    flex: 1,
+                    py: 2,
+                    fontSize: "1rem",
+                    fontWeight: "bold",
+                    background: timerActive
+                      ? "linear-gradient(135deg, #FF9800 0%, #F57C00 100%)"
+                      : "#ccc",
+                    color: "white",
+                    borderRadius: "12px",
+                    "&:hover": timerActive
+                      ? {
+                          background:
+                            "linear-gradient(135deg, #F57C00 0%, #FF9800 100%)",
+                        }
+                      : {},
+                    minWidth: "150px",
+                  }}
                 >
                   ⏭️ Skip
                 </Button>
               </Box>
-            </Grid>
-          </Grid>
+
+              {/* Next Round Button */}
+              {!timerActive && (
+                <Box sx={{ mt: 4, textAlign: "center" }}>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    onClick={handleNextRound}
+                    sx={{
+                      py: 2,
+                      px: 4,
+                      fontSize: "1rem",
+                      fontWeight: "bold",
+                      background:
+                        "linear-gradient(135deg, #2196F3 0%, #1976D2 100%)",
+                      color: "white",
+                      borderRadius: "12px",
+                      "&:hover": {
+                        background:
+                          "linear-gradient(135deg, #1976D2 0%, #2196F3 100%)",
+                      },
+                    }}
+                  >
+                    Start Next Round
+                  </Button>
+                </Box>
+              )}
+            </CardContent>
+          </Card>
         ) : (
-          <Card sx={{ mt: 3 }}>
-            <CardContent sx={{ textAlign: "center", py: 4 }}>
-              <Typography variant="h5" sx={{ mb: 2 }}>
-                Game Over!
+          <Card sx={{ borderRadius: "24px" }}>
+            <CardContent sx={{ textAlign: "center", py: 6 }}>
+              <Typography variant="h4" sx={{ mb: 2, fontWeight: "bold" }}>
+                Game Over! 🎉
               </Typography>
-              <Typography variant="body1" sx={{ mb: 3 }}>
-                All words have been used. Check the scores above!
+              <Typography variant="h6" sx={{ mb: 3 }}>
+                Final Scores
               </Typography>
-              <Button variant="contained" onClick={onBackToSetup}>
+              <Box
+                sx={{
+                  mb: 4,
+                  display: "flex",
+                  gap: 4,
+                  justifyContent: "center",
+                }}
+              >
+                <Box sx={{ textAlign: "center" }}>
+                  <Typography variant="body1" sx={{ mb: 1 }}>
+                    {gameConfig.team1.name}
+                  </Typography>
+                  <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                    {team1Score}
+                  </Typography>
+                </Box>
+                <Typography variant="h4">vs</Typography>
+                <Box sx={{ textAlign: "center" }}>
+                  <Typography variant="body1" sx={{ mb: 1 }}>
+                    {gameConfig.team2.name}
+                  </Typography>
+                  <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                    {team2Score}
+                  </Typography>
+                </Box>
+              </Box>
+              <Button variant="contained" onClick={onBackToSetup} size="large">
                 Back to Setup
               </Button>
             </CardContent>
