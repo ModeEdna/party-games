@@ -62,8 +62,12 @@ function GameBoard({ gameConfig, onBackToSetup }) {
   };
 
   const handleNextRound = () => {
-    setRoundCount(roundCount + 1);
-    setCurrentTeamTurn(currentTeamTurn === 1 ? 2 : 1);
+    const nextTeam = currentTeamTurn === 1 ? 2 : 1;
+    // Only increment round when Team 2 finishes (moving back to Team 1)
+    if (currentTeamTurn === 2) {
+      setRoundCount(roundCount + 1);
+    }
+    setCurrentTeamTurn(nextTeam);
     setTimerActive(true);
     setTimeLeft(gameConfig.timerSeconds);
     setRoundStarted(true);
@@ -366,9 +370,6 @@ function GameBoard({ gameConfig, onBackToSetup }) {
         ) : (
           <Card sx={{ borderRadius: "24px" }}>
             <CardContent sx={{ textAlign: "center", py: 6 }}>
-              <Typography variant="h4" sx={{ mb: 2, fontWeight: "bold" }}>
-                Game Over! 🎉
-              </Typography>
               <Typography variant="h6" sx={{ mb: 3 }}>
                 Final Scores
               </Typography>
